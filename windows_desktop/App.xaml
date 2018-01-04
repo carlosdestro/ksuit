@@ -49,18 +49,89 @@
                 </Setter>
             </Style>
 
-            <!--Style="{StaticResource TabStyleLight}"-->
-            <!--<Style TargetType="{x:Type dragablz:TabablzControl}" x:Key="TabStyleLight"  BasedOn="{StaticResource MaterialDesignTabablzControlStyle}">
-                <Setter Property="HeaderItemTemplate">
+            <Style x:Key="MaterialDesignHamburgerToggleSearch" TargetType="{x:Type ToggleButton}">
+                <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"/>
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="Width" Value="37" />
+                <Setter Property="Height" Value="37" />
+                <Setter Property="Padding" Value="1"/>
+                <Setter Property="Template">
                     <Setter.Value>
-                        <DataTemplate>
-                            <Grid Background="{DynamicResource PrimaryHueLightBrush}" >
-                                <TextBlock Text="{Binding}" Name="ttt" HorizontalAlignment="Center" />
-                            </Grid>
-                        </DataTemplate>
+                        <ControlTemplate TargetType="{x:Type ToggleButton}">
+                            <Border Background="{TemplateBinding Property=Background}">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState Name="Normal"/>
+                                        <VisualState Name="Disabled">
+                                            <Storyboard>
+                                                <DoubleAnimation Duration="0" To="0.23" Storyboard.TargetProperty="(UIElement.Opacity)" />
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                    <VisualStateGroup x:Name="CheckStates">
+                                        <VisualStateGroup.Transitions>
+                                            <VisualTransition From="*" To="Checked">
+                                                <Storyboard>
+                                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)" Storyboard.TargetName="canvas">
+                                                        <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="-360"/>
+                                                    </DoubleAnimationUsingKeyFrames>
+                                                </Storyboard>
+                                            </VisualTransition>
+                                            <VisualTransition From="Checked" To="Unchecked">
+                                                <Storyboard>
+                                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)" Storyboard.TargetName="canvas">
+                                                        <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="0"/>
+                                                    </DoubleAnimationUsingKeyFrames>
+                                                </Storyboard>
+                                            </VisualTransition>
+                                        </VisualStateGroup.Transitions>
+                                        <VisualState x:Name="Checked">
+                                            <Storyboard>
+                                                <DoubleAnimation Duration="0" To="-360" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)" Storyboard.TargetName="canvas" />
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="Unchecked">
+                                            <Storyboard>
+                                                <DoubleAnimation Duration="0" To="0" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)" Storyboard.TargetName="canvas" />
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <Viewbox>
+                                    <Canvas x:Name="canvas" Width="24" Height="24" RenderTransformOrigin="0.5,0.5">
+                                        <Canvas.RenderTransform>
+                                            <TransformGroup>
+                                                <ScaleTransform/>
+                                                <SkewTransform/>
+                                                <RotateTransform/>
+                                                <TranslateTransform/>
+                                            </TransformGroup>
+                                        </Canvas.RenderTransform>
+                                        <materialDesign:PackIcon Kind="Magnify" x:Name="rectangle" >
+                                            <materialDesign:PackIcon.RenderTransform>
+                                                <TransformGroup>
+                                                    <ScaleTransform/>
+                                                    <SkewTransform/>
+                                                    <RotateTransform/>
+                                                    <TranslateTransform/>
+                                                </TransformGroup>
+                                            </materialDesign:PackIcon.RenderTransform>
+                                        </materialDesign:PackIcon>
+                                    </Canvas>
+                                </Viewbox>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="Button.IsDefaulted" Value="true"/>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
                     </Setter.Value>
                 </Setter>
-            </Style>-->
+            </Style>
 
 
         </ResourceDictionary>

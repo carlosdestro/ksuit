@@ -73,6 +73,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BindingErrorTraceListener.cs" />
+    <Compile Include="HttpHelper.cs" />
+    <Compile Include="IViewModelNome.cs" />
+    <Compile Include="model\BoolConverter.cs" />
+    <Compile Include="model\NotEmptyValidationRule.cs" />
+    <Compile Include="model\ViewModelDataType.cs" />
     <Compile Include="ucForm.xaml.cs">
       <DependentUpon>ucForm.xaml</DependentUpon>
     </Compile>
@@ -82,6 +88,13 @@
     <Compile Include="ucMainForm.xaml.cs">
       <DependentUpon>ucMainForm.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ucSearchItem.xaml.cs">
+      <DependentUpon>ucSearchItem.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="model\ViewModelField.cs" />
+    <Compile Include="model\ViewModelForm.cs" />
+    <Compile Include="model\ViewModelOperation.cs" />
+    <Compile Include="model\ViewModelSearchResult.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -103,6 +116,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ucMainForm.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ucSearchItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

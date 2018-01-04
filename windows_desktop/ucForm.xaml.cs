@@ -1,7 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using MaterialDesignThemes.Wpf;
+using Newtonsoft.Json;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -18,6 +22,7 @@ using System.Windows.Shapes;
 
 namespace windows_desktop
 {
+
     /// <summary>
     /// Interaction logic for ucForm.xaml
     /// </summary>
@@ -25,80 +30,50 @@ namespace windows_desktop
     {
         public delegate void updateContextCallback(object o);
 
-        private string FormName;
-
-        public ucForm() : this("formulario")
+        public ViewModelForm Form
         {
-
+            get
+            {
+                return (ViewModelForm)DataContext;
+            }
+            set
+            {
+                DataContext = value;
+            }
         }
 
-        public ucForm(string formName)
+        RestClient client;
+
+        public ucForm()
         {
-            FormName = formName;
             InitializeComponent();
-            loadSchema();
 
-        }
-        public ucForm(string formName, ViewModelFormulario[] form)
-        {
-            FormName = formName;
-            InitializeComponent();
-            createControls(form);
-
-        }
-
-        public void loadSchema()
-        {
-            var client = new RestClient("http://127.0.0.1:8080/edsa-ksuit/http/");
+            client = new RestClient("http://127.0.0.1:8080/edsa-ksuit/http/");
 
             var _cookieJar = new CookieContainer();
 
             client.CookieContainer = _cookieJar;
-
-            var request = new RestRequest("?op=SCHEMA&table=" + FormName, Method.GET);
-
-            client.ExecuteAsync(request, response2 =>
-            {
-                Console.WriteLine(response2.Content);
-                var data = JsonConvert.DeserializeObject<ViewModelFormulario[]>(response2.Content);
-                createControls(data);
-
-            });
         }
 
-        private void createControls(ViewModelFormulario[] schema)
+        private Dictionary<string, object> Serialize()
         {
+            var result = new Dictionary<string, object>();
 
-            foreach (var formulario in schema)
+            for (var i = 0; i < Form.fields.Count; i++)
             {
-                this.Dispatcher.Invoke(new updateContextCallback(this.addField), formulario);
+                var field = Form.fields[i];
 
-                foreach (var campo in formulario.fields)
-                {
-                    this.Dispatcher.Invoke(new updateContextCallback(this.addField), campo);
-                }
-
-                var firstSub = true;
-
-                if (null != formulario.subs)
-                    foreach (var sub in formulario.subs)
-                    {
-                        if (firstSub)
-                        {
-
-                            this.Dispatcher.Invoke(new updateContextCallback(this.addSub), sub);
-
-
-
-                            //TODO ADICIONAR SUBFORMS NO TABCONTROL SE FIRSTSUB
-                        }
-                    }
+                result.Add(field.name, ((ViewModelField)mainStack.Items[i]).Value);
             }
+
+            return result;
         }
 
         private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             var d = -e.Delta;
+
+            var scrollButtons = (ScrollViewer)sender;
 
             if (d < 0)
             {
@@ -128,72 +103,78 @@ namespace windows_desktop
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             subtabs.Visibility = Visibility.Visible;
-            scrollButtons.Visibility = Visibility.Collapsed;
-            scrollButtons2.Width = 180;
-            scrollButtons2.HorizontalAlignment = HorizontalAlignment.Left;
+            gridScrollButtons.Visibility = Visibility.Collapsed;
+            mainStack.Width = 880;
+            mainStack.HorizontalAlignment = HorizontalAlignment.Left;
         }
 
         private void Grid_MouseEnter(object sender, MouseEventArgs e)
         {
             subtabs.Visibility = Visibility.Collapsed;
-            scrollButtons.Visibility = Visibility.Visible;
-            scrollButtons2.Width = double.NaN;
-            scrollButtons2.HorizontalAlignment = HorizontalAlignment.Stretch;
+            gridScrollButtons.Visibility = Visibility.Visible;
+            mainStack.Width = double.NaN;
+            mainStack.HorizontalAlignment = HorizontalAlignment.Stretch;
         }
-
-        private void addField(object o)
+ 
+        private void Operation_Click(object sender, RoutedEventArgs e)
         {
-            var t = new TextBox();
-            t.Text = ((IViewModelNome)o).nome;
-            mainStack.Children.Add(t);
+            var operation = ((Button)sender).Tag.ToString();
+
+            if (null != Form.parent)
+                Form.fields.FirstOrDefault( x=> x.name == Form.parent.name).Value = Form.parent.fields[1].Value;
+
+            if (Form.fields[0].Value == null)
+                Form.fields[0].Value = "0";
+
+            var d = Form.Serialize();
+
+            var del = new updateContextCallback(Form.Bind);
+
+            HttpHelper.ExecuteAsync(operation, Form.name, response2 =>
+            {
+                var record = JsonConvert.DeserializeObject<Dictionary<string, object>[]>(response2.Content).First();
+
+                this.Dispatcher.Invoke(del, record);
+
+            }, d);
         }
-        private void addSub(object o)
+
+        public ViewModelForm GetForm()
         {
-            var sub = (ViewModelFormulario)o;
-            var form = new ucForm(sub.nome, new ViewModelFormulario[] { sub });
-
-            var tabItem = new TabItem();
-            tabItem.Header = sub.nome;
-            tabItem.Content = form;
-            subtabs.Items.Add(tabItem);
-
-            var buttonItem = new Button();
-            buttonItem.Click += Button_Click;
-            buttonItem.Content = sub.nome;
-            hiddenTabs.Children.Add(buttonItem);
-
+            return (ViewModelForm)Form.Clone();
         }
+    }
 
-        public interface IViewModelNome
+    public class FormTemplateSelector : DataTemplateSelector
+    {
+        public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
-            string nome { get; set; }
+            var fe = (FrameworkElement)container;
+            var field = (ViewModelField)item;
+            var prop = field?.dataType;
+
+            try
+            {
+                if (null != prop)
+                {
+                    var res = fe.FindResource(prop + (field.required ? "_required" : string.Empty));
+
+                    if (null != res)
+                        return (DataTemplate)res;
+                }
+
+            }
+            catch(Exception e)
+            {
+
+            }
+            var res2 = fe.FindResource("text") as DataTemplate;
+
+
+            if (null != res2)
+                return res2;
+
+            return base.SelectTemplate(item, container);
         }
-
-        public class ViewModelFormulario : IViewModelNome
-        {
-            public int id;
-            public string nome { get; set; }
-            public string descricao;
-            public string tabela;
-            public string formulario;
-            public string visualizacaoModo;
-            public ViewModelCampo[] fields;
-            public ViewModelFormulario[] subs;
-        }
-
-        public class ViewModelCampo : IViewModelNome
-        {
-            public int id;
-            public string formulario;
-            public string nome { get; set; }
-            public int ordem;
-            public string descricao;
-            public string dadoTipo;
-            public string obrigatorio;
-            public string editavel;
-            public string campo;
-        }
-
-
     }
 }

@@ -30,7 +30,10 @@ namespace windows_desktop
         }
 
         private void asd_Click(object sender, RoutedEventArgs e)
-        {
+        {   
+            if(((Button)sender).Content.ToString() != "form")
+                ((Button)sender).Content = "t" + textbox1.Text;
+
             if (null != Navigate)
                 Navigate(sender, new RoutedEventArgs());
         }

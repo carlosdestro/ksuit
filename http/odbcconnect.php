@@ -21,25 +21,59 @@ function mssql_real_escape_string($data) {
         return $data;
 }
 
-function sql($sql, $params, $dbh = null)
+function connect()
 {
 	try
 	{
 		$hostname = ".\\SQLEXPRESS";
 		$port = 1433;
-		$dbname = "Sis";
-		$username = "sis";
-		$pw = 'sis';
+		$dbname = "sys";
+		$username = "sys2";
+		$pw = 'syssys';
 
+		$dbh = odbc_connect("Driver={ODBC Driver 13 for SQL Server};Server=$hostname;Database=$dbname;",$username,$pw);
+
+		return $dbh;
+	}	
+	catch (Exception $e)
+	{
+		echo gethostname();
+		
+		echo "Failed to get DB handle: " . $e->getMessage() . "\n";
+
+		exit;
+	}
+}
+
+function str_replace_first($from, $to, $subject)
+{
+    $from = '/'.preg_quote($from, '/').'/';
+
+    return preg_replace($from, $to, $subject, 1);
+}
+
+function sql($sql, $params = array(), $dbh = null)
+{
+	try
+	{
 		if($dbh == null)
 		{
-			$dbh = odbc_connect("Driver={ODBC Driver 13 for SQL Server};Server=$hostname;Database=$dbname;",$username,$pw);
+			$dbh = connect();
 
 //			$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		}
 
-		$stmt = odbc_prepare ($dbh, $sql);
-		$res = odbc_execute ($stmt, $params);
+		
+		$keys = array_keys($params);
+
+		for($i=0;$i<count($keys);$i++)
+		{
+			$sql = str_replace_first("?", "'".mssql_real_escape_string($params[$keys[$i]])."'", $sql);
+		}
+		$stmt = odbc_exec($dbh, $sql);
+
+		//$stmt = odbc_prepare ($dbh, $sql);
+		//$res = odbc_execute ($stmt, $params);
 		if(substr( $sql, 0, 6 ) === "INSERT")
 		{
 			return mssql("SELECT @@IDENTITY;", array(), $dbh);
@@ -49,14 +83,24 @@ function sql($sql, $params, $dbh = null)
 			return mssql("SELECT @@IDENTITY;", array(), $dbh);
 		}
 
-		$result = [];
+		$error = odbc_errormsg ($dbh);
+		
+		
+		if($error != "")
+		{
+			echo $error;
+			echo "<br>".$sql;
+			var_dump($params);
+			echo "<br>";
+		}
+		
 
+		$result = [];
 
 		//return $stmt->fetchAll();
 		while($r= odbc_fetch_array($stmt)){
 			$result[]= $r;
 		}
-
 
 		return $result;
 

@@ -56,7 +56,7 @@ namespace lab
             {
                 Console.WriteLine(response2.Content);
 
-                var data = JsonConvert.DeserializeObject<ViewModelFormulario[]>(response2.Content);
+                var data = JsonConvert.DeserializeObject<ViewModelForm[]>(response2.Content);
 
                 foreach (var formulario in data)
                 {
@@ -87,38 +87,10 @@ namespace lab
         private void updateContext(object o)
         {
             var t = new TextBox();
-            t.Text = ((IViewModelNome)o).nome;
+            t.Text = ((IViewModelName)o).nome;
             mainStack.Children.Add(t);
         }
-
-        interface IViewModelNome
-        {
-            string nome { get; set; }
-        }
-
-        class ViewModelFormulario : IViewModelNome
-        {
-            public int id;
-            public string nome { get; set; }
-            public string descricao;
-            public string tabela;
-            public string formulario;
-            public string visualizacaoModo;
-            public ViewModelCampo[] fields;
-            public ViewModelFormulario[] subs;
-        }
-
-        class ViewModelCampo : IViewModelNome
-        {
-            public int id;
-            public string formulario;
-            public string nome { get; set; }
-            public int ordem;
-            public string descricao;
-            public string dadoTipo;
-            public string obrigatorio;
-            public string editavel;
-            public string campo;
-        }
+        
+     
     }
 }

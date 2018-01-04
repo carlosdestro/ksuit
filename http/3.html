@@ -1,0 +1,20 @@
+<form id=f action="index.php?op=1&table=formulario" method="post"  enctype="multipart/form-data">
+	<input type="id" name="id">
+	<input type="nome" name="nome">
+	<input type="descricao" name="descricao">
+	<input type="tabela" name="tabela">
+	<input type="formulario" name="formulario">
+	<input type="visualizacaoModo" name="visualizacaoModo">
+
+</form>
+
+<input type="button" id="b">
+
+<Script>
+
+document.getElementById("b").addEventListener("click", function(r)
+{
+	document.getElementById("f").submit();	
+});
+
+</Script>

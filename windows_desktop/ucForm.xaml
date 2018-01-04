@@ -8,30 +8,244 @@
              xmlns:dragablz="clr-namespace:Dragablz;assembly=Dragablz"
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="800">
-    <Grid>
-        <ScrollViewer Name="scrollButtons" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" Height="32" Margin="10" Mouse.PreviewMouseWheel="ScrollViewer_PreviewMouseWheel" Panel.ZIndex="2000" >
-            <StackPanel Orientation="Horizontal">
-                <Button Content="CANCELAR" HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}" Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"  />
-                <Button Content="CADASTRAR" HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}"  Foreground="{DynamicResource PrimaryHueLightForegroundBrush}" />
 
-                <Button HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}" Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"  >
-                    <materialDesign:PackIcon Kind="SkipPreviousCircleOutline" Width="24" Height="24"  />
-                </Button>
-                <Button HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}" Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"  >
-                    <materialDesign:PackIcon Kind="ArrowLeftDropCircleOutline" Width="24" Height="24"  />
-                </Button>
-                <Button HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}"  Foreground="{DynamicResource PrimaryHueLightForegroundBrush}" >
-                    <materialDesign:PackIcon Kind="ArrowRightDropCircleOutline" Width="24" Height="24"  />
-                </Button>
-                <Button HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0"  Background="{DynamicResource PrimaryHueLightBrush}" Foreground="{DynamicResource PrimaryHueLightForegroundBrush}" >
-                    <materialDesign:PackIcon Kind="SkipNextCircleOutline" Width="24" Height="24"  />
-                </Button>
-                <Button Content="EXCLUIR" HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}" Foreground="{DynamicResource PrimaryHueLightForegroundBrush}" />
+    <UserControl.Resources>
+        <local:FormTemplateSelector x:Key="FormTemplateSelector" />
+
+        <DataTemplate x:Key="text">
+            <StackPanel>
+                <TextBox
+                        MaxLength="255"
+	                    Margin="0,0,8,20"
+	                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                        HorizontalAlignment="Stretch"
+	                    Tag="{Binding name}" VerticalAlignment="Top" Foreground="{DynamicResource PrimaryHueLightBrush}">
+                    <TextBox.Text>
+                        <Binding
+			            Mode="TwoWay"
+			            Path="Value"
+			            UpdateSourceTrigger="PropertyChanged">
+                        </Binding>
+                    </TextBox.Text>
+
+                    <materialDesign:HintAssist.Hint >
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding name}" HorizontalAlignment="Stretch"></TextBlock>
+                        </StackPanel>
+                    </materialDesign:HintAssist.Hint>
+                </TextBox>
             </StackPanel>
-        </ScrollViewer>
+        </DataTemplate>
+
+        <DataTemplate x:Key="text_required">
+            <StackPanel>
+                <TextBox
+                    MaxLength="{Binding size, ElementName= DataType}"
+	                        Margin="0,0,8,20"
+	                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                            HorizontalAlignment="Stretch"
+	                        Tag="{Binding name}" VerticalAlignment="Top" Foreground="{DynamicResource PrimaryHueLightBrush}"
+                            >
+                    <TextBox.Text>
+                        <Binding
+			            Mode="TwoWay"
+			            Path="Value"
+			            UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <local:NotEmptyValidationRule ValidatesOnTargetUpdated="True" />
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+
+                    <materialDesign:HintAssist.Hint >
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding name}" HorizontalAlignment="Stretch"></TextBlock>
+                        </StackPanel>
+                    </materialDesign:HintAssist.Hint>
+                </TextBox>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="bool">
+            <StackPanel>
+                <TextBlock Text="{Binding name}"></TextBlock>
+                <CheckBox >
+                    <CheckBox.IsChecked>
+                        <Binding
+			            Mode="TwoWay"
+			            Path="Value"
+			            UpdateSourceTrigger="PropertyChanged">
+                        </Binding>
+                    </CheckBox.IsChecked>
+                </CheckBox>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="bool_required">
+            <StackPanel>
+                <TextBlock Text="{Binding name}"></TextBlock>
+                <CheckBox >
+                    <CheckBox.IsChecked>
+                        <Binding
+			            Mode="TwoWay"
+			            Path="Value"
+			            UpdateSourceTrigger="PropertyChanged">
+                        </Binding>
+                    </CheckBox.IsChecked>
+                </CheckBox>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="int">
+            <StackPanel>
+                <TextBox
+	                        Margin="0,0,8,20"
+	                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                            HorizontalAlignment="Stretch"
+	                        Tag="{Binding name}" VerticalAlignment="Top" Foreground="{DynamicResource PrimaryHueLightBrush}"
+                            Text="{Binding Value, Mode=TwoWay}">
+                    <materialDesign:HintAssist.Hint >
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding name}" HorizontalAlignment="Stretch"></TextBlock>
+                        </StackPanel>
+                    </materialDesign:HintAssist.Hint>
+                </TextBox>
+            </StackPanel>
+        </DataTemplate>
+        
+        <DataTemplate x:Key="int_required">
+            <StackPanel>
+                <TextBox
+	                        Margin="0,0,8,20"
+	                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                            HorizontalAlignment="Stretch"
+	                        Tag="{Binding name}" VerticalAlignment="Top" Foreground="{DynamicResource PrimaryHueLightBrush}"
+                            Text="{Binding Value, Mode=TwoWay}">
+                    <materialDesign:HintAssist.Hint >
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding name}" HorizontalAlignment="Stretch"></TextBlock>
+                        </StackPanel>
+                    </materialDesign:HintAssist.Hint>
+                </TextBox>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="identity_required">
+            <StackPanel>
+                <TextBox
+	                        Margin="0,0,8,20"
+	                        Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                            HorizontalAlignment="Stretch"
+	                        Tag="{Binding name}" VerticalAlignment="Top" Foreground="{DynamicResource PrimaryHueLightBrush}"
+                            Text="{Binding Value, Mode=TwoWay}">
+                    <materialDesign:HintAssist.Hint >
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding name}" HorizontalAlignment="Stretch"></TextBlock>
+                        </StackPanel>
+                    </materialDesign:HintAssist.Hint>
+                </TextBox>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="datetime_required">
+            <StackPanel>
+                <DatePicker Margin="0,0,8,20"
+	                        Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
+                            HorizontalAlignment="Stretch"
+	                        Tag="{Binding name}" VerticalAlignment="Top" Foreground="{DynamicResource PrimaryHueLightBrush}" >
+
+                    <DatePicker.SelectedDate>
+                        <Binding
+			            Mode="TwoWay"
+			            Path="Value"
+			            UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <local:NotEmptyValidationRule ValidatesOnTargetUpdated="True" />
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </DatePicker.SelectedDate>
+
+                    <materialDesign:HintAssist.Hint >
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding name}" HorizontalAlignment="Stretch"></TextBlock>
+                        </StackPanel>
+                    </materialDesign:HintAssist.Hint>
+                </DatePicker>
+            </StackPanel>
+        </DataTemplate>
+
+
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid Name="gridScrollButtons" Background="#333333" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,200,0" Panel.ZIndex="2000">
+            <ScrollViewer x:Name="scrollTopButtons" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" Height="32" Margin="10,10,100,10" Mouse.PreviewMouseWheel="ScrollViewer_PreviewMouseWheel" Panel.ZIndex="2000" >
+                <ItemsControl Grid.Column="0" Name="stackFirstTopButtons"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding operations}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+
+                            <Button Click ="Operation_Click" Content="{Binding name}" Tag="{Binding id}" HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}" Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"  />
+
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <!--<StackPanel x:Name="stackFirstTopButtons" Orientation="Horizontal">
+                    <Button Content="CANCELAR" HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}" Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"  />
+                    <Button Content="CADASTRAR" HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}"  Foreground="{DynamicResource PrimaryHueLightForegroundBrush}" />
+                    <Button Content="NOVO" HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}" Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"  />
+                    <Button Content="SALVAR" IsEnabled="False" HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}"  Foreground="{DynamicResource PrimaryHueLightForegroundBrush}" />
+                    <Button Content="GRÁFICO" HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}" Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"  />
+                    <Button Content="RELATÓRIO" HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}"  Foreground="{DynamicResource PrimaryHueLightForegroundBrush}" />
+
+                    <Button HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}" Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"  >
+                        <materialDesign:PackIcon Kind="SkipPreviousCircleOutline" Width="24" Height="24"  />
+                    </Button>
+                    <Button HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}" Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"  >
+                        <materialDesign:PackIcon Kind="ArrowLeftDropCircleOutline" Width="24" Height="24"  />
+                    </Button>
+                    <Button HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}"  Foreground="{DynamicResource PrimaryHueLightForegroundBrush}" >
+                        <materialDesign:PackIcon Kind="ArrowRightDropCircleOutline" Width="24" Height="24"  />
+                    </Button>
+                    <Button HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0"  Background="{DynamicResource PrimaryHueLightBrush}" Foreground="{DynamicResource PrimaryHueLightForegroundBrush}" >
+                        <materialDesign:PackIcon Kind="SkipNextCircleOutline" Width="24" Height="24"  />
+                    </Button>
+                    <Button Content="EXCLUIR" HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}" Foreground="{DynamicResource PrimaryHueLightForegroundBrush}" />
+                </StackPanel>-->
+            </ScrollViewer>
+
+            <ScrollViewer x:Name="scrollSecondTopButtons" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" Height="32" Margin="10, 50,10,10" Mouse.PreviewMouseWheel="ScrollViewer_PreviewMouseWheel" Panel.ZIndex="2000" >
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="CANCELAR" HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}" Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"  />
+                    <Button Content="CADASTRAR" HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}"  Foreground="{DynamicResource PrimaryHueLightForegroundBrush}" />
+                    <Button Content="NOVO" HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}" Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"  />
+                    <Button Content="SALVAR" IsEnabled="False" HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}"  Foreground="{DynamicResource PrimaryHueLightForegroundBrush}" />
+                    <Button Content="GRÁFICO" HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}" Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"  />
+                    <Button Content="RELATÓRIO" HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}"  Foreground="{DynamicResource PrimaryHueLightForegroundBrush}" />
+
+                    <Button HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}" Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"  >
+                        <materialDesign:PackIcon Kind="SkipPreviousCircleOutline" Width="24" Height="24"  />
+                    </Button>
+                    <Button HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}" Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"  >
+                        <materialDesign:PackIcon Kind="ArrowLeftDropCircleOutline" Width="24" Height="24"  />
+                    </Button>
+                    <Button HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}"  Foreground="{DynamicResource PrimaryHueLightForegroundBrush}" >
+                        <materialDesign:PackIcon Kind="ArrowRightDropCircleOutline" Width="24" Height="24"  />
+                    </Button>
+                    <Button HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0"  Background="{DynamicResource PrimaryHueLightBrush}" Foreground="{DynamicResource PrimaryHueLightForegroundBrush}" >
+                        <materialDesign:PackIcon Kind="SkipNextCircleOutline" Width="24" Height="24"  />
+                    </Button>
+                    <Button Content="EXCLUIR" HorizontalAlignment="Left" VerticalAlignment="Stretch" Height="Auto" Margin="0, 0, 5, 0" Background="{DynamicResource PrimaryHueLightBrush}" Foreground="{DynamicResource PrimaryHueLightForegroundBrush}" />
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
 
         <materialDesign:ColorZone>
-            <materialDesign:PopupBox DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges" StaysOpen="False" Margin="10" VerticalAlignment="Top" HorizontalAlignment="Right" Panel.ZIndex="64000" >
+            <materialDesign:PopupBox DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges" StaysOpen="False" Margin="10" VerticalAlignment="Top" HorizontalAlignment="Right" Panel.ZIndex="13001" >
                 <StackPanel>
                     <Button Content="Hello World" />
                     <Button Content="Nice Popup"/>
@@ -43,40 +257,56 @@
         </materialDesign:ColorZone>
 
 
-        <Grid VerticalAlignment="Stretch" Margin="0, 50, 0, 0" MouseEnter="Grid_MouseEnter">
-
-            <ScrollViewer Name="scrollButtons2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Margin="10,0,100,0" >
-                <StackPanel Orientation="Vertical" Name="mainStack">
+        <Grid VerticalAlignment="Stretch" Margin="0, 100, 0, 0" MouseEnter="Grid_MouseEnter">
 
 
-                    <!--<TextBox
-	Margin="0,0,8,20"
-	Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-	Text="Nome" VerticalAlignment="Top" Foreground="{DynamicResource PrimaryHueLightBrush}">
-                        <materialDesign:HintAssist.Hint >
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock>Nome</TextBlock>
-                            </StackPanel>
-                        </materialDesign:HintAssist.Hint>
-                    </TextBox>
-                    <TextBox Margin="0,0,8,0"  VerticalAlignment="Top" Style="{StaticResource MaterialDesignFloatingHintTextBox}"  Foreground="{DynamicResource PrimaryHueLightBrush}" Text="Descrição">
-                        <materialDesign:HintAssist.Hint >
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock>Descrição</TextBlock>
-                            </StackPanel>
-                        </materialDesign:HintAssist.Hint>
-                    </TextBox>-->
+            <ItemsControl Grid.Column="0" Name="mainStack"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding fields}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical" Name="mainChildStack"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,10,200,000"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ContentPresenter Content="{Binding}"
+                        ContentTemplateSelector="{StaticResource FormTemplateSelector}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
-                </StackPanel>
-            </ScrollViewer>
-            <dragablz:TabablzControl  Name="subtabs" BorderThickness="0" Margin="200,-50,0,0" VerticalAlignment="Stretch" Background="#222222" Panel.ZIndex="59200" Visibility="Collapsed" >
 
+            <dragablz:TabablzControl Name="subtabs"  BorderThickness="0" Margin="200,-50,0,0" VerticalAlignment="Stretch" Background="#222222" Panel.ZIndex="59200" Visibility="Collapsed" ItemsSource="{Binding subs}" >
+
+                <TabControl.ContentTemplate>
+                    <DataTemplate DataType="{x:Type local:ViewModelForm}">
+                        <local:ucForm DataContext="{Binding}"></local:ucForm>
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+                <dragablz:TabablzControl.HeaderItemTemplate>
+                    <DataTemplate DataType="{x:Type local:ViewModelForm}">
+                        <TextBlock Text="{Binding name}" />
+                    </DataTemplate>
+                </dragablz:TabablzControl.HeaderItemTemplate>
             </dragablz:TabablzControl>
 
-            <ScrollViewer Name="scrollButtons5" HorizontalAlignment="Right" Width="100" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Margin="0" >
-                <StackPanel Name="hiddenTabs" Orientation="Vertical">
-                    
-                </StackPanel>
+
+
+
+            <ScrollViewer Name="scrollButtons5" HorizontalAlignment="Right" Width="200" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Margin="0" >
+                <ItemsControl Grid.Column="0" Name="hiddenTabs"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding subs}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+
+                            <Button Click ="Button_Click" Content="{Binding name}" Background="{DynamicResource PrimaryHueLightBrush}" Foreground="{DynamicResource PrimaryHueLightForegroundBrush}"  />
+
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </ScrollViewer>
         </Grid>
 

@@ -17,7 +17,8 @@
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{StaticResource MaterialDesignFont}"
         WindowStyle="None" ResizeMode="CanResizeWithGrip" AllowsTransparency="True"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="350" Width="525"
+        >
     <Window.Resources>
         <ResourceDictionary>
             <system:String x:Key="Partition">QuickStart</system:String>
@@ -30,7 +31,8 @@
         </ResourceDictionary>
     </Window.Resources>
     <materialDesign:DialogHost Identifier="RootDialog" SnackbarMessageQueue="{Binding ElementName=MainSnackbar, Path=MessageQueue}">
-        <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}">
+        <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}"
+                                   IsRightDrawerOpen="{Binding ElementName=MenuToggleSearch, Path=IsChecked}">
             <materialDesign:DrawerHost.LeftDrawerContent>
                 <materialDesign:ColorZone Mode="PrimaryDark"  HorizontalAlignment="Right" VerticalAlignment="Stretch">
                     <DockPanel MinWidth="242" >
@@ -46,6 +48,39 @@
                     </DockPanel>
                 </materialDesign:ColorZone>
             </materialDesign:DrawerHost.LeftDrawerContent>
+
+            <materialDesign:DrawerHost.RightDrawerContent>
+                <Grid>
+                    <materialDesign:ColorZone Mode="PrimaryDark"  HorizontalAlignment="Stretch" VerticalAlignment="Top" Padding="8">
+                        <DockPanel MinWidth="242" >
+                            <Grid>
+
+                                <TextBox Margin="5 0 0 0" 
+                             materialDesign:HintAssist.Hint="Search" x:Name="SearchBox"
+                             materialDesign:TextFieldAssist.DecorationVisibility="Hidden" BorderThickness="0"
+                             HorizontalAlignment="Stretch" VerticalAlignment="Center" KeyUp="SearchBox_KeyUp" />
+
+                                <Button HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignToolButton}" 
+                                Height="24" Width="32"  >
+                                    <materialDesign:PackIcon Kind="Magnify" Opacity=".56" Foreground="{DynamicResource MaterialDesignBody}"  />
+                                </Button>
+
+                            </Grid>
+                        </DockPanel>
+                    </materialDesign:ColorZone>
+                    <ListBox Name="listboxSearchResult" ItemsSource="{Binding items}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="1,40,0,0" SelectionChanged="listboxSearchResult_SelectionChanged" >
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <local:ucSearchItem DataContext="{Binding}" ></local:ucSearchItem>
+
+
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </materialDesign:DrawerHost.RightDrawerContent>
             <DockPanel>
 
                 <DockPanel>
@@ -53,24 +88,23 @@
                         <dockablz:Layout Partition="{StaticResource Partition}" Margin="52,0,0,0">
                             <dragablz:TabablzControl ShowDefaultCloseButton="True" Name="mainTabControl" BorderThickness="0">
                                 <dragablz:TabablzControl.HeaderSuffixContent>
-                                    <Border MaxHeight="30" Width="300"  Background="{DynamicResource PrimaryHueDarkBrush}" HorizontalAlignment="Right" Margin="5, 0" CornerRadius="3" ToolTip="Enter to search, ignore case">
+
+
+                                    <Border VerticalAlignment="Top" Background="{DynamicResource PrimaryHueDarkBrush}" HorizontalAlignment="Right" Margin="5, 0" CornerRadius="3" ToolTip="Enter to search, ignore case">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
 
-                                            <TextBox Margin="5 0 0 0" 
-                             materialDesign:HintAssist.Hint="Search" x:Name="SearchBox"
-                             materialDesign:TextFieldAssist.DecorationVisibility="Hidden" BorderThickness="0"
-                             MinWidth="200" VerticalAlignment="Center" />
+                                            <materialDesign:ColorZone Mode="PrimaryMid" >
+                                                <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth5" materialDesign:ShadowAssist.ShadowEdges="All"  Background="{DynamicResource PrimaryHueMidBrush}" >
+                                                    <ToggleButton DockPanel.Dock="Top" Margin="8,3,-6,0" Style="{DynamicResource MaterialDesignHamburgerToggleSearch}" IsChecked="False"
+                                            x:Name="MenuToggleSearch" Width="36"    />
+                                                </materialDesign:Card>
+                                            </materialDesign:ColorZone>
 
-                                            <Button Grid.Column="1" Style="{DynamicResource MaterialDesignToolButton}" 
-                                Command="{Binding SearchCommand}" x:Name="SearchButton"
-                                CommandParameter="{Binding ElementName=SearchBox, Path=Text}"
-                                Height="24" Width="32"  >
-                                                <materialDesign:PackIcon Kind="Magnify" Opacity=".56" Foreground="{DynamicResource MaterialDesignBody}"  />
-                                            </Button>
+
                                         </Grid>
                                     </Border>
                                 </dragablz:TabablzControl.HeaderSuffixContent>
@@ -84,7 +118,7 @@
                             </dragablz:TabablzControl>
                         </dockablz:Layout>
 
-                        <ScrollViewer Name="scrollButtons" VerticalAlignment="Stretch" HorizontalAlignment="Left" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
+                        <ScrollViewer x:Name="scrollMainButtons" VerticalAlignment="Stretch" HorizontalAlignment="Left" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
                             <StackPanel Orientation="Vertical">
 
                                 <materialDesign:ColorZone Mode="PrimaryMid" >
